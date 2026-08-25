@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Household Spending</title>
+<meta name="theme-color" content="#2B2E26" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Spending" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232B2E26'/%3E%3Ctext x='50' y='68' font-size='55' text-anchor='middle' fill='%23F2F1E9' font-family='Georgia,serif'%3E$%3C/text%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232B2E26'/%3E%3Ctext x='50' y='68' font-size='55' text-anchor='middle' fill='%23F2F1E9' font-family='Georgia,serif'%3E$%3C/text%3E%3C/svg%3E" />
+<link rel="manifest" href='data:application/manifest+json,{"name":"Household%20Spending","short_name":"Spending","start_url":".","display":"standalone","background_color":"%23F2F1E9","theme_color":"%232B2E26"}' />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #F2F1E9; color: #2B2E26;
+    font-family: 'Inter', sans-serif;
+    padding-bottom: 40px;
+  }
+  header {
+    border-bottom: 1px solid #DAD8C9; background: #F2F1E9;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .header-inner { max-width: 760px; margin: 0 auto; padding: 18px 20px 14px; display: flex; flex-direction: column; gap: 12px; }
+  .brand-row { display: flex; align-items: center; gap: 10px; }
+  .brand-row svg { flex-shrink: 0; }
+  h1.title { font-family: 'Source Serif 4', serif; font-weight: 700; font-size: 26px; margin: 0; letter-spacing: -0.01em; }
+  nav { display: flex; gap: 8px; flex-wrap: wrap; }
+  .nav-btn {
+    display: flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px;
+    border: 1px solid #DAD8C9; background: transparent; color: #5c5c4e; font-size: 13.5px;
+    font-weight: 500; cursor: pointer; font-family: inherit;
+  }
+  .nav-btn.active { background: #2B2E26; color: #F2F1E9; border-color: #2B2E26; }
+  .strip-wrap { max-width: 760px; margin: 18px auto 0; padding: 0 20px; }
+  .strip-label { display: flex; align-items: center; gap: 6px; font-size: 11.5px; text-transform: uppercase;
+    letter-spacing: 0.08em; color: #8a8a7a; margin-bottom: 8px; font-weight: 600; }
+  .strip-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .stub { background: #FBFAF5; border: 1px solid #DAD8C9; border-radius: 10px; padding: 10px 12px; }
+  .stub-top { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .stub-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .stub-label { font-size: 12.5px; font-weight: 600; color: #4a4a3d; }
+  .stub-nums { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  .stub-of { color: #9a9a8a; }
+  .track { height: 4px; background: #EAE8DB; border-radius: 4px; margin-top: 6px; overflow: hidden; }
+  .track-fill { height: 100%; border-radius: 4px; }
+  .over-tag { font-size: 10.5px; color: #B5452B; margin-top: 4px; font-weight: 600; }
+  main { max-width: 760px; margin: 0 auto; padding: 22px 20px 0; display: grid; gap: 18px; }
+  .card { background: #FBFAF5; border: 1px solid #DAD8C9; border-radius: 14px; padding: 20px 22px; }
+  .card h2 { font-family: 'Source Serif 4', serif; font-size: 18px; font-weight: 700; margin: 0 0 14px; }
+  .field-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; flex: 1 1 140px; }
+  .label-text { font-size: 12px; font-weight: 600; color: #6b6b5c; }
+  input, select, textarea {
+    border: 1px solid #DAD8C9; border-radius: 8px; padding: 9px 10px; font-size: 14px;
+    font-family: inherit; background: #fff; color: #2B2E26; width: 100%;
+  }
+  textarea { resize: vertical; min-height: 60px; }
+  .submit-btn {
+    display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 11px;
+    border-radius: 8px; border: none; background: #5C6B4A; color: #F2F1E9; font-size: 14px;
+    font-weight: 600; cursor: pointer; margin-top: 4px;
+  }
+  .empty-text { font-size: 13.5px; color: #9a9a8a; }
+  .list { display: flex; flex-direction: column; gap: 10px; max-height: 420px; overflow-y: auto; }
+  .row { display: flex; align-items: flex-start; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid #EAE8DB; }
+  .row-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+  .row-main { flex: 1; min-width: 0; }
+  .row-top { display: flex; justify-content: space-between; gap: 8px; }
+  .row-type { font-size: 13.5px; font-weight: 600; }
+  .row-val { font-family: 'JetBrains Mono', monospace; font-size: 13.5px; }
+  .row-meta { font-size: 12px; color: #9a9a8a; margin-top: 2px; }
+  .del-btn { border: none; background: transparent; color: #b5a89a; cursor: pointer; padding: 4px; flex-shrink: 0; }
+  .pie-row { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .pie-svg { width: 240px; height: 240px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 16px; justify-content: center; font-size: 12.5px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; }
+  .compare-list { display: flex; flex-direction: column; gap: 10px; }
+  .compare-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid #EAE8DB; }
+  .compare-label { font-size: 13.5px; font-weight: 600; flex: 1 1 100px; }
+  .compare-val { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: #6b6b5c; }
+  .status-tag { font-size: 11.5px; font-weight: 600; color: #fff; padding: 3px 9px; border-radius: 999px; }
+  .hint { font-size: 12.5px; color: #8a8a7a; margin-top: -6px; margin-bottom: 14px; }
+  .type-options { display: flex; flex-wrap: wrap; gap: 8px; }
+  .type-opt {
+    display: flex; align-items: center; gap: 7px;
+    padding: 9px 13px; border-radius: 999px; border: 1px solid #DAD8C9;
+    background: #fff; color: #4a4a3d; font-size: 13.5px; font-weight: 500;
+    cursor: pointer; font-family: inherit;
+  }
+  .type-opt .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .type-opt.selected {
+    background: #2B2E26; color: #F2F1E9; border-color: #2B2E26;
+  }
+  .hidden { display: none !important; }
+  .bar-chart { display: flex; align-items: flex-end; gap: 10px; height: 200px; padding-top: 10px; overflow-x: auto; }
+  .bar-col { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 46px; height: 100%; justify-content: flex-end; flex-shrink: 0; }
+  .bar-val { font-size: 10.5px; font-family: 'JetBrains Mono', monospace; color: #4a4a3d; white-space: nowrap; }
+  .bar-fill { width: 28px; border-radius: 5px 5px 0 0; min-height: 3px; }
+  .bar-month { font-size: 11px; color: #8a8a7a; margin-top: 2px; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand-row">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5C6B4A" stroke-width="1.5"><path d="M4 3h16v18l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5V3z"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>
+      <h1 class="title">Household Spending</h1>
+    </div>
+    <nav>
+      <button class="nav-btn active" id="tab-ledger" onclick="showPage('ledger')">📖 Ledger</button>
+      <button class="nav-btn" id="tab-chart" onclick="showPage('chart')">📊 Pie Chart</button>
+      <button class="nav-btn" id="tab-sarip" onclick="showPage('sarip')">🧾 Sarip's</button>
+      <button class="nav-btn" id="tab-saripchart" onclick="showPage('saripchart')">📈 Sarip's Charts</button>
+    </nav>
+  </div>
+</header>
+
+<div class="strip-wrap" id="strip-household">
+  <div class="strip-label">📅 Monthly limits &amp; spend-to-date</div>
+  <div class="strip-row" id="limits-strip"></div>
+</div>
+
+<div class="strip-wrap hidden" id="strip-sarip">
+  <div class="strip-label">📅 Sarip's monthly limit &amp; spend-to-date</div>
+  <div class="strip-row" id="sarip-limit-strip"></div>
+</div>
+
+<main>
+  <div id="page-ledger">
+    <div class="card">
+      <h2>New entry</h2>
+      <form id="entry-form">
+        <div class="field-row">
+          <label class="field"><span class="label-text">Date</span>
+            <input type="date" id="f-date" required />
+          </label>
+          <label class="field"><span class="label-text">Time</span>
+            <input type="time" id="f-time" required />
+          </label>
+        </div>
+        <label class="field"><span class="label-text">Value (RM)</span>
+          <input type="number" step="0.01" min="0" id="f-value" placeholder="0.00" required />
+        </label>
+        <label class="field"><span class="label-text">Spending type</span>
+          <select id="f-type"></select>
+        </label>
+        <label class="field"><span class="label-text">Notes</span>
+          <textarea id="f-notes" placeholder="Optional"></textarea>
+        </label>
+        <button type="submit" class="submit-btn">+ Add entry</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2 id="entries-count">Recent entries (0)</h2>
+      <div id="entries-list"></div>
+    </div>
+  </div>
+
+  <div id="page-chart" class="hidden">
+    <div class="card">
+      <h2>Choose a period</h2>
+      <div class="field-row">
+        <label class="field"><span class="label-text">From</span>
+          <input type="date" id="c-start" />
+        </label>
+        <label class="field"><span class="label-text">To</span>
+          <input type="date" id="c-end" />
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Breakdown</h2>
+      <div id="chart-body"></div>
+    </div>
+
+    <div class="card">
+      <h2>Vs. your limits</h2>
+      <p class="hint">Limits are set per month — this compares your spend across the chosen period against those monthly caps.</p>
+      <div class="compare-list" id="compare-list"></div>
+    </div>
+  </div>
+
+  <div id="page-sarip" class="hidden">
+    <div class="card">
+      <h2>New Sarip's entry</h2>
+      <p class="hint">Personal spending, kept separate from the household ledger.</p>
+      <form id="sarip-form">
+        <div class="field-row">
+          <label class="field"><span class="label-text">Date</span>
+            <input type="date" id="s-date" required />
+          </label>
+          <label class="field"><span class="label-text">Time</span>
+            <input type="time" id="s-time" required />
+          </label>
+        </div>
+        <label class="field"><span class="label-text">Value (RM)</span>
+          <input type="number" step="0.01" min="0" id="s-value" placeholder="0.00" required />
+        </label>
+        <label class="field"><span class="label-text">Spending type</span>
+          <select id="s-type"></select>
+        </label>
+        <label class="field"><span class="label-text">Notes</span>
+          <textarea id="s-notes" placeholder="Optional"></textarea>
+        </label>
+        <button type="submit" class="submit-btn">+ Add entry</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2 id="sarip-entries-count">Recent entries (0)</h2>
+      <div id="sarip-entries-list"></div>
+    </div>
+  </div>
+
+  <div id="page-saripchart" class="hidden">
+    <div class="card">
+      <h2>Choose a period</h2>
+      <div class="field-row">
+        <label class="field"><span class="label-text">From</span>
+          <input type="date" id="sc-start" />
+        </label>
+        <label class="field"><span class="label-text">To</span>
+          <input type="date" id="sc-end" />
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Breakdown</h2>
+      <div id="sarip-chart-body"></div>
+    </div>
+
+    <div class="card">
+      <h2>Month-to-month total</h2>
+      <p class="hint">Every spending type combined, summed from the 1st to the last day of each month.</p>
+      <div id="sarip-bar-body"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const CATEGORIES = [
+  { key: "eat_out", label: "Eat out", limit: 1000, color: "#B5452B" },
+  { key: "wet_supplies", label: "Wet supplies", limit: 800, color: "#3E5C76" },
+  { key: "dry_supplies", label: "Dry supplies", limit: 100, color: "#8C6D2F" },
+  { key: "laundry", label: "Laundry", limit: 100, color: "#5C6B4A" },
+];
+const catByKey = Object.fromEntries(CATEGORIES.map(c => [c.key, c]));
+const STORAGE_KEY = "household-spending-entries";
+
+const SARIP_CATEGORIES = [
+  { key: "jajan", label: "Jajan", color: "#B5452B" },
+  { key: "books", label: "Books", color: "#3E5C76" },
+  { key: "charity", label: "Charity", color: "#5C6B4A" },
+  { key: "fuel", label: "Fuel", color: "#8C6D2F" },
+  { key: "tng", label: "TNG", color: "#6B4C9A" },
+  { key: "grab", label: "Grab", color: "#1F8A70" },
+  { key: "friends", label: "Friends", color: "#C9A227" },
+  { key: "gadget", label: "Gadget", color: "#4A6FA5" },
+  { key: "others", label: "Others", color: "#7A7A6A" },
+];
+const saripCatByKey = Object.fromEntries(SARIP_CATEGORIES.map(c => [c.key, c]));
+const SARIP_LIMIT = 500;
+const SARIP_STORAGE_KEY = "sarip-spending-entries";
+
+function fmtRM(n) {
+  return "RM " + n.toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function todayStr() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+function nowTimeStr() { return new Date().toTimeString().slice(0,5); }
+
+function loadEntries() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+  catch(e) { return []; }
+}
+function saveEntries(entries) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+}
+
+let entries = loadEntries();
+
+function loadSaripEntries() {
+  try { return JSON.parse(localStorage.getItem(SARIP_STORAGE_KEY) || "[]"); }
+  catch(e) { return []; }
+}
+function saveSaripEntries(list) {
+  localStorage.setItem(SARIP_STORAGE_KEY, JSON.stringify(list));
+}
+let saripEntries = loadSaripEntries();
+
+// ---- populate type select ----
+const typeSelect = document.getElementById('f-type');
+CATEGORIES.forEach(c => {
+  const opt = document.createElement('option');
+  opt.value = c.key; opt.textContent = c.label;
+  typeSelect.appendChild(opt);
+});
+document.getElementById('f-date').value = todayStr();
+document.getElementById('f-time').value = nowTimeStr();
+
+// ---- populate Sarip's type select ----
+const saripTypeSelect = document.getElementById('s-type');
+SARIP_CATEGORIES.forEach(c => {
+  const opt = document.createElement('option');
+  opt.value = c.key; opt.textContent = c.label;
+  saripTypeSelect.appendChild(opt);
+});
+document.getElementById('s-date').value = todayStr();
+document.getElementById('s-time').value = nowTimeStr();
+
+// ---- limits strip ----
+function renderLimitsStrip() {
+  const ym = todayStr().slice(0,7);
+  const totals = Object.fromEntries(CATEGORIES.map(c => [c.key, 0]));
+  entries.forEach(e => { if (e.date.slice(0,7) === ym) totals[e.type] += e.value; });
+
+  const wrap = document.getElementById('limits-strip');
+  wrap.innerHTML = '';
+  CATEGORIES.forEach(c => {
+    const spent = totals[c.key] || 0;
+    const over = spent > c.limit;
+    const pct = Math.min(100, (spent / c.limit) * 100);
+    const div = document.createElement('div');
+    div.className = 'stub';
+    div.innerHTML = `
+      <div class="stub-top"><span class="stub-dot" style="background:${c.color}"></span><span class="stub-label">${c.label}</span></div>
+      <div class="stub-nums"><span style="color:${over ? '#B5452B' : '#2B2E26'};font-weight:600">${fmtRM(spent)}</span><span class="stub-of"> / ${fmtRM(c.limit)}</span></div>
+      <div class="track"><div class="track-fill" style="width:${pct}%;background:${over ? '#B5452B' : c.color}"></div></div>
+      ${over ? `<div class="over-tag">over by ${fmtRM(spent - c.limit)}</div>` : ''}
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+// ---- ledger list ----
+function renderEntries() {
+  document.getElementById('entries-count').textContent = `Recent entries (${entries.length})`;
+  const list = document.getElementById('entries-list');
+  if (entries.length === 0) {
+    list.innerHTML = `<p class="empty-text">Nothing logged yet. Add your first entry to start the ledger.</p>`;
+    return;
+  }
+  const sorted = [...entries].sort((a,b) => (b.date+"T"+b.time).localeCompare(a.date+"T"+a.time));
+  list.innerHTML = `<div class="list">${sorted.map(e => {
+    const cat = catByKey[e.type];
+    return `<div class="row">
+      <span class="row-dot" style="background:${cat.color}"></span>
+      <div class="row-main">
+        <div class="row-top"><span class="row-type">${cat.label}</span><span class="row-val">${fmtRM(e.value)}</span></div>
+        <div class="row-meta">${e.date} · ${e.time}${e.notes ? ' — ' + escapeHtml(e.notes) : ''}</div>
+      </div>
+      <button class="del-btn" onclick="removeEntry('${e.id}')">🗑</button>
+    </div>`;
+  }).join('')}</div>`;
+}
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+window.removeEntry = function(id) {
+  entries = entries.filter(e => e.id !== id);
+  saveEntries(entries);
+  renderEntries();
+  renderLimitsStrip();
+  renderChart();
+};
+
+// ---- Sarip's limit strip ----
+function renderSaripLimitStrip() {
+  const ym = todayStr().slice(0,7);
+  let spent = 0;
+  saripEntries.forEach(e => { if (e.date.slice(0,7) === ym) spent += e.value; });
+  const over = spent > SARIP_LIMIT;
+  const pct = Math.min(100, (spent / SARIP_LIMIT) * 100);
+  const wrap = document.getElementById('sarip-limit-strip');
+  wrap.innerHTML = `
+    <div class="stub" style="max-width:280px">
+      <div class="stub-top"><span class="stub-dot" style="background:#2B2E26"></span><span class="stub-label">Sarip's spending</span></div>
+      <div class="stub-nums"><span style="color:${over ? '#B5452B' : '#2B2E26'};font-weight:600">${fmtRM(spent)}</span><span class="stub-of"> / ${fmtRM(SARIP_LIMIT)}</span></div>
+      <div class="track"><div class="track-fill" style="width:${pct}%;background:${over ? '#B5452B' : '#2B2E26'}"></div></div>
+      ${over ? `<div class="over-tag">over by ${fmtRM(spent - SARIP_LIMIT)}</div>` : ''}
+    </div>
+  `;
+}
+
+// ---- Sarip's entries list ----
+function renderSaripEntries() {
+  document.getElementById('sarip-entries-count').textContent = `Recent entries (${saripEntries.length})`;
+  const list = document.getElementById('sarip-entries-list');
+  if (saripEntries.length === 0) {
+    list.innerHTML = `<p class="empty-text">Nothing logged yet. Add your first entry to start this ledger.</p>`;
+    return;
+  }
+  const sorted = [...saripEntries].sort((a,b) => (b.date+"T"+b.time).localeCompare(a.date+"T"+a.time));
+  list.innerHTML = `<div class="list">${sorted.map(e => {
+    const cat = saripCatByKey[e.type];
+    return `<div class="row">
+      <span class="row-dot" style="background:${cat.color}"></span>
+      <div class="row-main">
+        <div class="row-top"><span class="row-type">${cat.label}</span><span class="row-val">${fmtRM(e.value)}</span></div>
+        <div class="row-meta">${e.date} · ${e.time}${e.notes ? ' — ' + escapeHtml(e.notes) : ''}</div>
+      </div>
+      <button class="del-btn" onclick="removeSaripEntry('${e.id}')">🗑</button>
+    </div>`;
+  }).join('')}</div>`;
+}
+window.removeSaripEntry = function(id) {
+  saripEntries = saripEntries.filter(e => e.id !== id);
+  saveSaripEntries(saripEntries);
+  renderSaripEntries();
+  renderSaripLimitStrip();
+  renderSaripChart();
+};
+
+// ---- add Sarip's entry ----
+document.getElementById('sarip-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const val = parseFloat(document.getElementById('s-value').value);
+  const date = document.getElementById('s-date').value;
+  const time = document.getElementById('s-time').value;
+  if (!date || !time || isNaN(val) || val <= 0) return;
+  saripEntries.push({
+    id: Date.now() + "-" + Math.random().toString(36).slice(2,7),
+    date, time, value: val,
+    type: document.getElementById('s-type').value,
+    notes: document.getElementById('s-notes').value.trim(),
+  });
+  saveSaripEntries(saripEntries);
+  document.getElementById('s-value').value = '';
+  document.getElementById('s-notes').value = '';
+  renderSaripEntries();
+  renderSaripLimitStrip();
+  renderSaripChart();
+});
+
+// ---- add entry ----
+document.getElementById('entry-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const val = parseFloat(document.getElementById('f-value').value);
+  const date = document.getElementById('f-date').value;
+  const time = document.getElementById('f-time').value;
+  if (!date || !time || isNaN(val) || val <= 0) return;
+  entries.push({
+    id: Date.now() + "-" + Math.random().toString(36).slice(2,7),
+    date, time, value: val,
+    type: document.getElementById('f-type').value,
+    notes: document.getElementById('f-notes').value.trim(),
+  });
+  saveEntries(entries);
+  document.getElementById('f-value').value = '';
+  document.getElementById('f-notes').value = '';
+  renderEntries();
+  renderLimitsStrip();
+  renderChart();
+});
+
+// ---- pages ----
+function showPage(page) {
+  document.getElementById('page-ledger').classList.toggle('hidden', page !== 'ledger');
+  document.getElementById('page-chart').classList.toggle('hidden', page !== 'chart');
+  document.getElementById('page-sarip').classList.toggle('hidden', page !== 'sarip');
+  document.getElementById('page-saripchart').classList.toggle('hidden', page !== 'saripchart');
+  document.getElementById('tab-ledger').classList.toggle('active', page === 'ledger');
+  document.getElementById('tab-chart').classList.toggle('active', page === 'chart');
+  document.getElementById('tab-sarip').classList.toggle('active', page === 'sarip');
+  document.getElementById('tab-saripchart').classList.toggle('active', page === 'saripchart');
+
+  const isSaripPage = page === 'sarip' || page === 'saripchart';
+  document.getElementById('strip-household').classList.toggle('hidden', isSaripPage);
+  document.getElementById('strip-sarip').classList.toggle('hidden', !isSaripPage);
+
+  if (page === 'chart') renderChart();
+  if (page === 'saripchart') renderSaripChart();
+}
+
+// ---- chart page ----
+const firstOfMonth = new Date(); firstOfMonth.setDate(1);
+document.getElementById('c-start').value = `${firstOfMonth.getFullYear()}-${String(firstOfMonth.getMonth()+1).padStart(2,'0')}-01`;
+document.getElementById('c-end').value = todayStr();
+document.getElementById('c-start').addEventListener('change', renderChart);
+document.getElementById('c-end').addEventListener('change', renderChart);
+
+function renderChart() {
+  const start = document.getElementById('c-start').value;
+  const end = document.getElementById('c-end').value;
+  const totals = Object.fromEntries(CATEGORIES.map(c => [c.key, 0]));
+  entries.forEach(e => { if (e.date >= start && e.date <= end) totals[e.type] += e.value; });
+  const rows = CATEGORIES.map(c => ({ ...c, value: totals[c.key] })).filter(r => r.value > 0);
+  const grand = Object.values(totals).reduce((a,b) => a+b, 0);
+
+  const body = document.getElementById('chart-body');
+  if (rows.length === 0) {
+    body.innerHTML = `<p class="empty-text">No spending recorded in this period.</p>`;
+  } else {
+    let gradient = [];
+    let acc = 0;
+    rows.forEach(r => {
+      const slice = (r.value / grand) * 360;
+      gradient.push(`${r.color} ${acc}deg ${acc+slice}deg`);
+      acc += slice;
+    });
+    body.innerHTML = `
+      <div class="pie-row">
+        <div class="pie-svg" style="border-radius:50%;background:conic-gradient(${gradient.join(',')})"></div>
+        <div class="legend">${rows.map(r => `<div class="legend-item"><span class="legend-dot" style="background:${r.color}"></span>${r.label}: ${fmtRM(r.value)}</div>`).join('')}</div>
+        <div style="font-size:13px;color:#6b6b5c">Total in period: <strong style="color:#2B2E26">${fmtRM(grand)}</strong></div>
+      </div>
+    `;
+  }
+
+  const compareList = document.getElementById('compare-list');
+  compareList.innerHTML = CATEGORIES.map(c => {
+    const spent = totals[c.key] || 0;
+    const over = spent > c.limit;
+    const diff = Math.abs(spent - c.limit);
+    return `<div class="compare-row">
+      <span class="row-dot" style="background:${c.color}"></span>
+      <span class="compare-label">${c.label}</span>
+      <span class="compare-val">${fmtRM(spent)} / ${fmtRM(c.limit)}</span>
+      <span class="status-tag" style="background:${over ? '#B5452B' : '#5C6B4A'}">${over ? 'Over by ' + fmtRM(diff) : 'Under by ' + fmtRM(diff)}</span>
+    </div>`;
+  }).join('');
+}
+
+// ---- Sarip's chart page ----
+const scFirstOfMonth = new Date(); scFirstOfMonth.setDate(1);
+document.getElementById('sc-start').value = `${scFirstOfMonth.getFullYear()}-${String(scFirstOfMonth.getMonth()+1).padStart(2,'0')}-01`;
+document.getElementById('sc-end').value = todayStr();
+document.getElementById('sc-start').addEventListener('change', renderSaripChart);
+document.getElementById('sc-end').addEventListener('change', renderSaripChart);
+
+function renderSaripChart() {
+  const start = document.getElementById('sc-start').value;
+  const end = document.getElementById('sc-end').value;
+  const totals = Object.fromEntries(SARIP_CATEGORIES.map(c => [c.key, 0]));
+  saripEntries.forEach(e => { if (e.date >= start && e.date <= end) totals[e.type] += e.value; });
+  const rows = SARIP_CATEGORIES.map(c => ({ ...c, value: totals[c.key] })).filter(r => r.value > 0);
+  const grand = Object.values(totals).reduce((a,b) => a+b, 0);
+
+  const body = document.getElementById('sarip-chart-body');
+  if (rows.length === 0) {
+    body.innerHTML = `<p class="empty-text">No spending recorded in this period.</p>`;
+  } else {
+    let gradient = [];
+    let acc = 0;
+    rows.forEach(r => {
+      const slice = (r.value / grand) * 360;
+      gradient.push(`${r.color} ${acc}deg ${acc+slice}deg`);
+      acc += slice;
+    });
+    body.innerHTML = `
+      <div class="pie-row">
+        <div class="pie-svg" style="border-radius:50%;background:conic-gradient(${gradient.join(',')})"></div>
+        <div class="legend">${rows.map(r => `<div class="legend-item"><span class="legend-dot" style="background:${r.color}"></span>${r.label}: ${fmtRM(r.value)}</div>`).join('')}</div>
+        <div style="font-size:13px;color:#6b6b5c">Total in period: <strong style="color:#2B2E26">${fmtRM(grand)}</strong></div>
+      </div>
+    `;
+  }
+
+  renderSaripBarChart();
+}
+
+function renderSaripBarChart() {
+  const barBody = document.getElementById('sarip-bar-body');
+  if (saripEntries.length === 0) {
+    barBody.innerHTML = `<p class="empty-text">No spending recorded yet.</p>`;
+    return;
+  }
+  const monthTotals = {};
+  saripEntries.forEach(e => {
+    const ym = e.date.slice(0,7);
+    monthTotals[ym] = (monthTotals[ym] || 0) + e.value;
+  });
+  const months = Object.keys(monthTotals).sort();
+  const maxVal = Math.max(...Object.values(monthTotals), SARIP_LIMIT);
+  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  barBody.innerHTML = `<div class="bar-chart">${months.map(ym => {
+    const [y, m] = ym.split('-');
+    const total = monthTotals[ym];
+    const over = total > SARIP_LIMIT;
+    const heightPct = Math.max(3, (total / maxVal) * 100);
+    return `<div class="bar-col">
+      <span class="bar-val">${fmtRM(total)}</span>
+      <div class="bar-fill" style="height:${heightPct}%;background:${over ? '#B5452B' : '#2B2E26'}"></div>
+      <span class="bar-month">${monthNames[parseInt(m,10)-1]} '${y.slice(2)}</span>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ---- init ----
+renderLimitsStrip();
+renderEntries();
+renderSaripLimitStrip();
+renderSaripEntries();
+</script>
+</body>
+</html>
